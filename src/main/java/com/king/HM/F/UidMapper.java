@@ -5,6 +5,7 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * @program: hdfs
@@ -22,12 +23,13 @@ public class UidMapper extends Mapper<Object, Text, Text, IntWritable> {
 
     @Override
     protected void map(Object key, Text value, Context context) throws IOException, InterruptedException {
-        System.out.println("mapper");
+
         String line = value.toString();
         String[] arr = line.split("\t");
+        System.out.println("mapper" + Arrays.toString(arr));
         if (null != arr && arr.length == 6) {
             String uid = arr[1];
-            if (null != uid && "".equals(uid.trim())) {
+            if (null != uid && !"".equals(uid.trim())) {
                 uidText.set(uid);
                 context.write(uidText, ONE);
             }
