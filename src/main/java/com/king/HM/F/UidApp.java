@@ -42,11 +42,10 @@ public class UidApp extends Configured implements Tool {
         FileSystem fs = FileSystem.get(conf);
         Path inPath = new Path("D:\\wordcount\\input\\F\\data.txt");
         Path outPath = new Path("D:\\wordcount\\output\\F");
-        Job job = Job.getInstance(super.getConf(),"二次排序");
+        Job job = Job.getInstance(super.getConf(), "搜狗");
         job.setJarByClass(UidApp.class);
         job.setCombinerClass((Class<? extends Reducer>) Reducer.class);
-        job.setNumReduceTasks(1);
-
+        job.setNumReduceTasks(4);
 
 
         job.setMapperClass(UidMapper.class);
@@ -56,20 +55,19 @@ public class UidApp extends Configured implements Tool {
         job.setReducerClass(UidReducer.class);
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(IntWritable.class);
-       // job.setPartitionerClass(WordCountPartitioner.class);
+        job.setPartitionerClass(WordCountPartitioner.class);
 
 
-        FileInputFormat.addInputPath(job,inPath);
-
+        FileInputFormat.addInputPath(job, inPath);
 
 
         if (fs.exists(outPath)) {
             fs.delete(outPath, true);
         }
-        FileOutputFormat.setOutputPath(job,outPath);
+        FileOutputFormat.setOutputPath(job, outPath);
 
         boolean b = job.waitForCompletion(true);
 
-        return b ? 0 :1;
+        return b ? 0 : 1;
     }
 }

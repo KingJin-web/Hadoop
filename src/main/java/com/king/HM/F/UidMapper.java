@@ -26,7 +26,7 @@ public class UidMapper extends Mapper<Object, Text, Text, IntWritable> {
 
         String line = value.toString();
         String[] arr = line.split("\t");
-        System.out.println("mapper" + Arrays.toString(arr));
+        //System.out.println("mapper" + Arrays.toString(arr));
         if (null != arr && arr.length == 6) {
             String uid = arr[1];
             if (null != uid && !"".equals(uid.trim())) {

@@ -18,8 +18,10 @@ public class WeatherSort extends WritableComparator {
     @Override
     public int compare(WritableComparable a, WritableComparable b) {
         System.out.println("调用Sort 中的 compare");
+        System.out.println(a);
         Weather w1 = (Weather) a;
         Weather w2 = (Weather) b;
+        System.out.println(a);
         int c1 = Integer.compare(w1.getYear(), w2.getYear());
         if (c1 == 0) {
             int c2 = Integer.compare(w1.getMonth(), w2.getMonth());

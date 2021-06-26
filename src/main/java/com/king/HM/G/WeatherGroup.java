@@ -20,6 +20,7 @@ public class WeatherGroup extends WritableComparator {
         System.out.println("Group 的比较");
         Weather w1 = (Weather) a;
         Weather w2 = (Weather) b;
+        System.out.println(w1);
         int c1 = Integer.compare(w1.getYear(), w2.getYear());
         if (c1 == 0) {
             return Integer.compare(w1.getMonth(), w2.getMonth());

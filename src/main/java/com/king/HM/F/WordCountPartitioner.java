@@ -11,6 +11,10 @@ import org.apache.hadoop.mapreduce.Partitioner;
  * @create: 2021-06-24 21:25
  */
 public class WordCountPartitioner extends Partitioner<Text, IntWritable> {
+    public WordCountPartitioner() {
+        System.out.println(" WordCountPartitioner");
+    }
+
     @Override
     public int getPartition(Text text, IntWritable intWritable, int i) {
         System.out.println("注意分区数: " + i);

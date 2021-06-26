@@ -18,6 +18,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
+import org.apache.log4j.BasicConfigurator;
 
 import java.io.FileInputStream;
 
@@ -29,7 +30,7 @@ import java.io.FileInputStream;
  */
 public class WApp extends Configured implements Tool {
     public static void main(String[] args) throws Exception {
-        //BasicConfigurator.configure(); //自动快速地使用缺省Log4j环境
+        BasicConfigurator.configure(); //自动快速地使用缺省Log4j环境
         int i = ToolRunner.run(new WApp(), args);
 
         System.exit(i);
@@ -37,7 +38,7 @@ public class WApp extends Configured implements Tool {
 
     @Override
     public int run(String[] strings) throws Exception {
-        Configuration conf = new Configuration();
+        Configuration conf = getConf();
         FileSystem fs = FileSystem.get(conf);
         Path inPath = new Path("D:\\wordcount\\input\\G");
         Path outPath = new Path("D:\\wordcount\\output\\G");
@@ -48,8 +49,7 @@ public class WApp extends Configured implements Tool {
         FileOutputFormat.setOutputPath(job,outPath);
 
         job.setMapperClass(WeatherMapper.class);
-        job.setMapOutputKeyClass(Weather.class);
-        job.setMapOutputValueClass(IntWritable.class);
+
 
         job.setReducerClass(WeatherReducer.class);
         job.setOutputKeyClass(Weather.class);
@@ -59,7 +59,7 @@ public class WApp extends Configured implements Tool {
         job.setGroupingComparatorClass(WeatherGroup.class);
         job.setPartitionerClass(WeatherPartition.class);
 
-        job.setNumReduceTasks(3);
+        job.setNumReduceTasks(1);
 
         if (fs.exists(outPath)) {
             fs.delete(outPath, true);
