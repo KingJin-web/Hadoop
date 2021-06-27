@@ -2,6 +2,7 @@ package com.king.util;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Objects;
 
 import org.apache.hadoop.fs.Path;
@@ -20,53 +21,112 @@ public class ReadOutput {
     }
 
     public ReadOutput(Path readPath) {
-        System.out.println("计算后结果: ");
-        this.readPath = readPath + "\\part-r-00000";
+        this.readPath = readPath + "";
         read();
     }
 
     public ReadOutput(String readPath) {
-        System.out.println("计算后结果: ");
-        this.readPath = readPath + "\\part-r-00000";
+        this.readPath = readPath;
         read();
     }
 
     public void read() {
-
-        File file = new File(readPath);
-        try (BufferedReader bin = new BufferedReader(new FileReader(file))) {
-            String s;
-            while ((s = bin.readLine()) != null) {
-                System.out.println(s);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        read(readPath);
     }
 
-    public static void read(Path path) {
-        System.out.println("计算后结果: ");
-        String readPath = path + "\\part-r-00000";
-        File file = new File(readPath);
-        try (BufferedReader bin = new BufferedReader(new FileReader(file))) {
-            String s;
-            while ((s = bin.readLine()) != null) {
-
-                System.out.println(s);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
+    /**
+     * 读取所有生成的 part-r-00000 文件
+     *
+     * @param path
+     */
     public static void read(String path) {
         System.out.println("计算后结果: ");
         String readPath = path + "\\part-r-00000";
         File file = new File(readPath);
         try (BufferedReader bin = new BufferedReader(new FileReader(file))) {
             String s;
+            int count = 0;
             while ((s = bin.readLine()) != null) {
+                count++;
                 System.out.println(s);
+            }
+            System.out.println(count + " 条数据");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void read(Path path) {
+        read(path + "");
+    }
+
+    /**
+     * 读取所有生成的 part-r-* 文件
+     *
+     * @param path
+     */
+    public static void readAll(String path) {
+        readAll(path, "part-r-", false);
+    }
+
+    /**
+     * 读取所有生成的 part-r-* 文件
+     *
+     * @param path
+     */
+    public static void readAll(String path, boolean bool) {
+        readAll(path, "part-r-", bool);
+    }
+
+    /**
+     * 读取文件夹下 指定前缀名的文件
+     *
+     * @param path      文件路径
+     * @param startName 文件前缀名
+     * @param bool      是否遍历全部
+     */
+    public static void readAll(String path, String startName, boolean bool) {
+        File file = new File(path);
+        File[] files = file.listFiles();
+
+        assert files != null;
+        Arrays.sort(files);
+        int count = 0;
+        for (File value : files) {
+            String fileName = value.getName();
+            if (value.isFile() && fileName.startsWith(startName)) {
+                try (InputStreamReader reader = new InputStreamReader(new FileInputStream(value));
+                     BufferedReader br = new BufferedReader(reader);) {
+                    String line = "";
+                    System.out.println("读取文件: " + fileName);
+                    while ((line = br.readLine()) != null) {
+                        System.out.println(line);
+                        count++;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else if (bool) {
+                System.out.println("文件夹： " + value.getName());
+                readAll(value.getPath(), startName, true);
+            }
+
+        }
+        System.out.println(count + "条数据");
+    }
+
+    public static void readAll(Path path) {
+        readAll(path.toString());
+    }
+
+    void test() {
+        File file = new File(readPath);
+        try (BufferedReader bin = new BufferedReader(new FileReader(file))) {
+            String s;
+            int count = 0;
+            while ((s = bin.readLine()) != null && count <= 1000) {
+                System.out.println(s);
+                count++;
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -74,17 +134,7 @@ public class ReadOutput {
     }
 
     public static void main(String[] args) {
-        String readPath = "H:\\Tencent\\QQ下载\\sogou.500w.utf8";
-        File file = new File(readPath);
-        try (BufferedReader bin = new BufferedReader(new FileReader(file))) {
-            String s;
-            int count = 0;
-            while ((s = bin.readLine()) != null&& count <=1000) {
-                System.out.println(s);
-                count++;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String readPath = "C:\\Users\\King\\OneDrive\\Documents\\a";
+        readAll(readPath, "", true);
     }
 }
