@@ -65,9 +65,7 @@ public class ReadOutput {
      *
      * @param path
      */
-    public static void readAll(String path) {
-        readAll(path, "part-r-", false);
-    }
+    public static void readAll(String path) { readAll(path, "part-r-", false); }
 
     /**
      * 读取所有生成的 part-r-* 文件

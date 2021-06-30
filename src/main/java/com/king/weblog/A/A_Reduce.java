@@ -1,7 +1,6 @@
-package com.king.homework.A;
+package com.king.weblog.A;
 
 import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
@@ -13,16 +12,17 @@ import java.io.IOException;
  * @author: King
  * @create: 2021-06-27 18:41
  */
-public class A_Reduce extends Reducer<Text, IntWritable, Text, LongWritable> {
-    private LongWritable count = new LongWritable();
+public class A_Reduce extends Reducer<Text, IntWritable, Text, IntWritable> {
+    private IntWritable outputValue = new IntWritable();
 
     @Override
     protected void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
-        int c = 0;
-        for (IntWritable i : values) {
-            c += i.get();
+        //统计单词数
+        int count = 0;
+        for (IntWritable value : values) {
+            count = count + value.get();
         }
-        count.set(c);
-        context.write(key, count);
+        //将输出的结果放到context 里面
+        context.write(key, new IntWritable(count));
     }
 }

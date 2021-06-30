@@ -1,16 +1,11 @@
-package com.king.homework.A;
+package com.king.weblog.A;
 
 import com.king.util.ReadOutput;
-import com.king.wc.H.p2.CountApp;
-import com.king.wc.H.p2.CountCombiner;
-import com.king.wc.H.p2.CountMapper;
-import com.king.wc.H.p2.CountReduce;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
@@ -37,7 +32,7 @@ public class A_App extends Configured implements Tool {
     public int run(String[] strings) throws Exception {
         Configuration conf = getConf();
         FileSystem fs = FileSystem.get(conf);
-        Path inPath = new Path("D:\\wordcount\\input\\data\\data.txt");
+        Path inPath = new Path("D:\\wordcount\\input\\data\\access.log");
         Path outPath = new Path("D:\\wordcount\\output\\data");
         Job job = Job.getInstance(super.getConf(), "IP");
         job.setJarByClass(A_App.class);
@@ -51,7 +46,7 @@ public class A_App extends Configured implements Tool {
 
         job.setReducerClass(A_Reduce.class);
         job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(LongWritable.class);
+        job.setOutputValueClass(IntWritable.class);
 
 
         if (fs.exists(outPath)) {
