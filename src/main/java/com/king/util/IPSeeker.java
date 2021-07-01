@@ -65,7 +65,7 @@ public class IPSeeker {
         }
     }
 
-    private static final String IP_FILE = "D:\\Program Files (x86)\\cz88.net\\ip\\qqwry.dat";
+    private static final String IP_FILE = "src/main/java/com/king/util/qqwry.dat";
 
     // 一些固定常量，比如记录长度等等
     private static final int IP_RECORD_LENGTH = 7;
@@ -93,7 +93,7 @@ public class IPSeeker {
      * 私有构造函数
      */
     public IPSeeker() {
-        System.out.println(IP_FILE);
+
         ipCache = new Hashtable<String, IPLocation>();
         loc = new IPLocation();
         buf = new byte[100];
@@ -103,7 +103,7 @@ public class IPSeeker {
             ipFile = new RandomAccessFile(IP_FILE, "r");
         } catch (FileNotFoundException e) {
             System.out.println(IPSeeker.class.getResource("/QQWry.dat").toString());
-            System.out.println(IP_FILE);
+
             System.out.println("IP地址信息文件没有找到，IP显示功能将无法使用");
             ipFile = null;
 
@@ -700,10 +700,12 @@ public class IPSeeker {
         list.add("218.77.74.132");
         list.add("8.8.8.8");
         System.out.println(ips.getAddress(list));
-        //System.out.println(ips.getAddress("222.66.6.206"));
 
-        String ip = "255.255.255.255";
-        System.out.println(ip.length());
+
+        String ip = "218.77.74.132";
+        System.out.println(ips.getAddress(ip));
+        byte[] ipb= {8,8,8,8};
+        System.out.println(ips.getAddress(ipb));
     }
 
     private List<String> getAddress(List<String> list) {

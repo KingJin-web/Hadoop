@@ -37,8 +37,8 @@ public class Pv_mr extends Configured implements Tool {
 
         @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
-            //KPI kpi = KPI.parser(value.toString());
-            KPI kpi = KPI.fileterPVs(value.toString());
+            KPI kpi = KPI.parser(value.toString());
+           // KPI kpi = KPI.fileterPVs(value.toString());
             if (kpi.isValid()){
                 outputKey.set(kpi.getRequest());
                 context.write(outputKey, outputValue);
@@ -72,7 +72,7 @@ public class Pv_mr extends Configured implements Tool {
     public int run(String[] strings) throws Exception {
         Configuration conf = getConf();
         FileSystem fs = FileSystem.get(conf);
-        Path inPath = new Path("D:\\wordcount\\input\\data\\access.20120104.log");
+        Path inPath = new Path("D:\\wordcount\\input\\data\\access.log.10");
         Path outPath = new Path("D:\\wordcount\\output\\data");
         Job job = Job.getInstance(super.getConf(), "IP");
         job.setJarByClass(Pv_mr.class);

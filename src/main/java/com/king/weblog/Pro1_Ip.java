@@ -78,7 +78,7 @@ public class Pro1_Ip extends Configured implements Tool {
     public int run(String[] strings) throws Exception {
         Configuration conf = getConf();
         FileSystem fs = FileSystem.get(conf);
-        Path inPath = new Path("D:\\wordcount\\input\\data\\data.txt");
+        Path inPath = new Path("D:\\wordcount\\input\\data\\access.log.10");
         Path outPath = new Path("D:\\wordcount\\output\\data");
         Job job = Job.getInstance(super.getConf(), "IP");
         job.setJarByClass(Pro1_Ip.class);
