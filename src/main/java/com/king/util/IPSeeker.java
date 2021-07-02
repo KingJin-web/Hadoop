@@ -92,7 +92,7 @@ public class IPSeeker {
     /**
      * 私有构造函数
      */
-    public IPSeeker() {
+    private IPSeeker() {
 
         ipCache = new Hashtable<String, IPLocation>();
         loc = new IPLocation();
@@ -706,6 +706,8 @@ public class IPSeeker {
         System.out.println(ips.getAddress(ip));
         byte[] ipb= {8,8,8,8};
         System.out.println(ips.getAddress(ipb));
+
+        System.out.println( IPSeeker.getInstance().getAddress(ip));
     }
 
     private List<String> getAddress(List<String> list) {

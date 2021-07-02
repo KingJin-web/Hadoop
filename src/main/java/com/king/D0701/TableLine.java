@@ -68,7 +68,7 @@ public class TableLine {
             if (i == 0) {
                 this.timeFlag = ("00-" + timepoint[i]);
             } else {
-                this.timeFlag = (timepoint[i - 1] + timepoint[i]);
+                this.timeFlag = (timepoint[i - 1] +"-"+ timepoint[i]);
             }
         } else {
             throw new LineException("", -1);

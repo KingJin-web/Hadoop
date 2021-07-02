@@ -57,6 +57,8 @@ public class ReadOutput {
     }
 
     public static void read(Path path) {
+        System.out.println(path.toUri());
+        System.out.println(path);
         read(path + "");
     }
 
@@ -133,6 +135,9 @@ public class ReadOutput {
 
     public static void main(String[] args) {
         String readPath = "C:\\Users\\King\\OneDrive\\Documents\\a";
-        readAll(readPath, "", true);
+        Path outPath = new Path("D:\\wordcount\\output\\H");
+
+        read(outPath);
+        readAll(outPath.toString(), "", true);
     }
 }
