@@ -89,11 +89,13 @@ public class ReadOutput {
         File file = new File(path);
         File[] files = file.listFiles();
 
-        assert files != null;
-        Arrays.sort(files);
+
+
         int count = 0;
+        assert files != null;
         for (File value : files) {
             String fileName = value.getName();
+
             if (value.isFile() && fileName.startsWith(startName)) {
                 try (InputStreamReader reader = new InputStreamReader(new FileInputStream(value));
                      BufferedReader br = new BufferedReader(reader);) {
@@ -106,7 +108,7 @@ public class ReadOutput {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            } else if (bool) {
+            } else if (bool && !fileName.endsWith(".crc") && !fileName.endsWith("_SUCCESS")) {
                 System.out.println("文件夹： " + value.getName());
                 readAll(value.getPath(), startName, true);
             }
@@ -134,10 +136,9 @@ public class ReadOutput {
     }
 
     public static void main(String[] args) {
-        String readPath = "C:\\Users\\King\\OneDrive\\Documents\\a";
+        String readPath = "D:\\wordcount\\output\\D0701";
         Path outPath = new Path("D:\\wordcount\\output\\H");
+        ReadOutput.readAll(readPath,true);
 
-        read(outPath);
-        readAll(outPath.toString(), "", true);
     }
 }

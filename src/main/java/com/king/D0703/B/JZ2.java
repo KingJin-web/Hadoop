@@ -1,7 +1,8 @@
-package com.king.D0701;
+package com.king.D0703.B;
 
+import com.king.D0701.LineException;
+import com.king.D0701.TableLine;
 import com.king.util.ReadOutput;
-import com.king.weblog.Pv_mr;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileSystem;
@@ -20,35 +21,31 @@ import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.apache.log4j.BasicConfigurator;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-
-import java.util.Iterator;
-import java.util.Map.Entry;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * @program: hdfs
- * @description: 先计算出不同用户在不同时段在不同基站停留的时间.
+ * @description:
  * @author: King
- * @create: 2021-07-01 19:53
+ * @create: 2021-07-03 16:40
  */
-public class Task1 extends Configured implements Tool {
+public class JZ2 extends Configured implements Tool {
+    //TODO  统计基站的总数， 本运营商注册的手机号个数。
     enum Counter {
-        TIMESKIP, //时间格式有误
-        OUTOFTIMESKIP, // 时间不在指定时间段类
         LINESKIP, //源文件有误
+        OUTOFTIMESKIP, // 时间不在指定时间段类
+        TIMESKIP, //时间格式有误
         USERSKIP //
+
 
     }
 
-    public static class TaskMapper extends Mapper<LongWritable, Text, Text, Text> {
-        //        private Text outputKey = new Text();
-//        private static final IntWritable outputValue = new IntWritable(1);
+    public static class JZ2Mapper extends Mapper<LongWritable, Text, Text, Text> {
+        private Text outputKey = new Text();
+        private Text outputValue = new Text();
         private TableLine tl = new TableLine();
         private String date;
         private String[] timepoint;
@@ -76,105 +73,53 @@ public class Task1 extends Configured implements Tool {
                 tl.set(s, this.dataSource, this.date, this.timepoint);
             } catch (LineException e) {
                 if (e.getFlag() == -1) {
-                    context.getCounter(Counter.OUTOFTIMESKIP).increment(1);
+                    context.getCounter(JZ2.Counter.OUTOFTIMESKIP).increment(1);
                 } else {
-                    context.getCounter(Counter.TIMESKIP).increment(1);
+                    context.getCounter(JZ2.Counter.TIMESKIP).increment(1);
                 }
                 return;
             } catch (Exception e) {
-                context.getCounter(Counter.LINESKIP).increment(1);
+                context.getCounter(JZ2.Counter.LINESKIP).increment(1);
                 return;
             }
-
-            context.write(tl.OutKey(), tl.OutValue());
+            System.out.println(tl);
+            outputKey.set(tl.getPosition());
+            outputValue.set(tl.getImsi());
+            context.write(outputKey, outputValue);
 
         }
     }
 
-    public static class TaskReduce extends Reducer<Text, Text, NullWritable, Text> {
-        private Text outputValue = new Text();
-        // 用户IMSI|基站|时间段|时长
-        private String imsi;
-        private String position;
-        private String timeFlag;
-        private String time;
-        private String date;
-
-        private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-        @Override
-        protected void setup(Context context) throws IOException, InterruptedException {
-            this.date = context.getConfiguration().get("date");
-        }
+    public static class JZ2Reduce extends Reducer<Text, Text, Text, IntWritable> {
+        private Text outputKey = new Text();
+        private static IntWritable outputValue = new IntWritable(1);
+        private HashSet<String> sims = new HashSet<>();
+        ;
+        int count1 = 0; //sim 卡数量
+        int count2 = 0; //基站 卡数量
 
         @Override
         protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
-            String[] s1 = key.toString().split("\\|");
-            imsi = s1[0];
-            timeFlag = s1[1];
-
-            TreeMap<Long, String> uploads = new TreeMap<>();
-            String value;
-            String s2[];
+            int sum = 0;
+            System.out.println(key.toString());
             for (Text v : values) {
-
-                value = v.toString();
-                s2 = value.split("\\|");
-
-                try {
-                    uploads.put(Long.valueOf(s2[1]), s2[0]);
-                } catch (NumberFormatException e) {
-                    context.getCounter(Counter.TIMESKIP).increment(1);
+                if (sims.add(v.toString())) {
+                    sum++;
                 }
-
             }
-            try {
-                Date tmp = this.formatter.parse(this.date + " " + timeFlag.split("-")[1] + ":00:00");
-                uploads.put(tmp.getTime() / 1000L, "OFF");
-                HashMap<String, Float> locs = getStayTime(uploads);
-                System.out.println(locs);
-                for (Entry<String, Float> entry : locs.entrySet()) {
-                    StringBuilder builder = new StringBuilder();
-                    builder.append(imsi).append("|");
-                    builder.append(entry.getKey()).append("|");
-                    builder.append(timeFlag).append("|");
-                    builder.append(entry.getValue());
-                    outputValue.set(builder.toString());
-                    context.write(NullWritable.get(), outputValue);
-                }
-
-
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-
-            super.reduce(key, values, context);
+            count1 += sum;
+            count2++;
         }
 
-        private HashMap<String, Float> getStayTime(TreeMap<Long, String> uploads) {
-            Entry<Long, String> upload, nextUpload;
-            HashMap<String, Float> locs = new HashMap<>();
-            Iterator<Entry<Long, String>> it = uploads.entrySet().iterator();
-            upload = it.next();
-            while (it.hasNext()) {
-                nextUpload = it.next();
-                float diff = (float) ((nextUpload.getKey() - upload.getKey()) / 60.0);
-                if (diff <= 60.0) {
-                    if (locs.containsKey(upload.getValue())) {
-                        locs.put(upload.getValue(), locs.get(upload.getValue()) + diff);
-                    } else {
-                        locs.put(upload.getValue(), diff);
-                    }
-                }
-                upload = nextUpload;
-            }
-            return locs;
-        }
 
         @Override
         protected void cleanup(Context context) throws IOException, InterruptedException {
-            super.cleanup(context);
+            outputKey.set("基站总数");
+            outputValue.set(count2);
+            context.write(outputKey, outputValue);
+            outputKey.set("sim卡数量");
+            outputValue.set(count1);
+            context.write(outputKey, outputValue);
         }
     }
 
@@ -186,19 +131,19 @@ public class Task1 extends Configured implements Tool {
         FileSystem fs = FileSystem.get(conf);
         Path inPath = new Path(strings[0]);
         Path outPath = new Path(strings[1]);
-        Job job = Job.getInstance(super.getConf(), "基站");
-        job.setJarByClass(Task1.class);
+        Job job = Job.getInstance(super.getConf(), "统计基站的总数， 本运营商注册的手机号个数。");
+        job.setJarByClass(JZ2.class);
 
         FileInputFormat.addInputPath(job, inPath);
         FileOutputFormat.setOutputPath(job, outPath);
 
-        job.setMapperClass(TaskMapper.class);
+        job.setMapperClass(JZ2Mapper.class);
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(Text.class);
 
-        job.setReducerClass(TaskReduce.class);
+        job.setReducerClass(JZ2Reduce.class);
         job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(Text.class);
+        job.setOutputValueClass(IntWritable.class);
 
 
         if (fs.exists(outPath)) {
@@ -234,7 +179,7 @@ public class Task1 extends Configured implements Tool {
             System.exit(-1);
         }
 
-        int i = ToolRunner.run(new Task1(), args);
+        int i = ToolRunner.run(new JZ2(), args);
 
         System.exit(i);
     }

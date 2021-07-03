@@ -93,6 +93,22 @@ public class TableLine {
 
     @Override
     public String toString() {
-        return OutKey().toString() + " " + OutValue().toString();
+        return "TableLine{" +
+                "imsi='" + imsi + '\'' +
+                ", position='" + position + '\'' +
+                ", time='" + time + '\'' +
+                ", timeFlag='" + timeFlag + '\'' +
+                ", Time=" + Time +
+                ", day=" + day +
+                ", formatter=" + formatter +
+                '}';
+    }
+
+    public String getPosition() {
+        return position;
+    }
+
+    public String getImsi() {
+        return imsi;
     }
 }

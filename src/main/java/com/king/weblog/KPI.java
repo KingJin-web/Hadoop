@@ -1,5 +1,9 @@
 package com.king.weblog;
 
+import com.king.util.IPSeeker;
+
+import javax.print.attribute.standard.MediaSize;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -48,6 +52,42 @@ public class KPI {
         }
     }
 
+    //返回所使用的浏览器
+    private static KPI browser = new KPI();
+
+    public static String browser(String line) {
+        String[] items = line.split(" ");
+        if (items.length > 11) {
+            browser.status = items[8];
+            String[] ss = line.split("\"");
+            browser.http_user_agent = ss[ss.length - 1];
+            if (Integer.parseInt(browser.status) >= 400) {
+                return "Other";
+            } else {
+                browser.valid = true;
+            }
+        } else {
+            return "Other";
+        }
+        return getBrowser(browser.getHttp_user_agent());
+    }
+
+    public static String getBrowser(String User_Agent) {
+
+        String Other = "Other";
+        String Chrome = "Chrome";
+        String Firefox = "Firefox";
+        if (User_Agent.lastIndexOf(Chrome) > 0) {
+            return Chrome;
+        } else if (User_Agent.lastIndexOf(Firefox) > 0) {
+            return Firefox;
+        } else {
+            return Other;
+        }
+
+
+    }
+
     /* 按page的pv分类 */
     public static KPI fileterPVs(String line) {
         KPI kpi = parser(line);
@@ -67,9 +107,40 @@ public class KPI {
         }
         return kpi;
     }
+
     public static KPI parser(String line) {
 
         return new KPI(line);
+    }
+
+    public static String GetAddress(String line) {
+        String Other = "Other";
+        String[] items = line.split(" ");
+        if (items.length > 11) {
+            String ip = items[0];
+
+            if (Integer.parseInt(items[8]) >= 400) {
+                return Other;
+            }
+            return IPSeeker.getInstance().getCountry(ip);
+        } else {
+            return Other;
+        }
+    }
+
+    public static String GetDate(String line) {
+        String[] items = line.split(" ");
+        if (items.length > 11) {
+            String time = items[3].substring(1);
+
+            if (Integer.parseInt(items[8]) >= 400) {
+                return "Other";
+            }
+            return time;
+
+        } else {
+            return "Other";
+        }
     }
 
     public boolean isValid() {
@@ -160,7 +231,8 @@ public class KPI {
     }
 
     public static void main(String[] args) {
-        KPI kpi = new KPI("114.112.141.6 - - [04/Jan/2012:00:00:02 +0800] \"GET /popwin_js.php?fid=133 HTTP/1.1\" 200 11 \"http://www.itpub.net/thread-1554759-4-10.html\" \"Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Trident/4.0; InfoPath.3; .NET4.0C; .NET4.0E; .NET CLR 2.0.50727; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729)");
-        System.out.println(kpi);
+        String s = KPI.browser("114.112.141.6 - - [04/Jan/2012:00:00:02 +0800] \"GET /popwin_js.php?fid=133 HTTP/1.1\" 200 11 \"http://www.itpub.net/thread-1554759-4-10.html\" \"Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Trident/4.0; InfoPath.3; .NET4.0C; .NET4.0E; .NET CLR 2.0.50727; .NET CLR 3.0.4506.2152; .NET CLR 3.5.30729)");
+        System.out.println(s);
+        //System.out.println(kpi);
     }
 }
