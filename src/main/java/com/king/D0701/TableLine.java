@@ -15,11 +15,13 @@ import java.util.Date;
  */
 public class TableLine {
     private String imsi;
+    private String imei;
     private String position;
     private String time;
     private String timeFlag;
     private long Time;
     private Date day;
+    private String url;
     private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public TableLine() {
@@ -39,12 +41,15 @@ public class TableLine {
         String[] lineSplit = lien.split("\t");
         if (source) {
             this.imsi = lineSplit[0];
+            this.imei = lineSplit[1];
             this.position = lineSplit[3];
             this.time = lineSplit[4];
         } else {
             this.imsi = lineSplit[0];
+            this.imei = lineSplit[1];
             this.position = lineSplit[2];
             this.time = lineSplit[3];
+            this.url = lineSplit[4];
         }
         //检查日期合法性
         if (!this.time.startsWith(date)) {
@@ -68,7 +73,7 @@ public class TableLine {
             if (i == 0) {
                 this.timeFlag = ("00-" + timepoint[i]);
             } else {
-                this.timeFlag = (timepoint[i - 1] +"-"+ timepoint[i]);
+                this.timeFlag = (timepoint[i - 1] + "-" + timepoint[i]);
             }
         } else {
             throw new LineException("", -1);
@@ -110,5 +115,13 @@ public class TableLine {
 
     public String getImsi() {
         return imsi;
+    }
+
+    public String getImei() {
+        return imei;
+    }
+
+    public String getUrl() {
+        return url;
     }
 }

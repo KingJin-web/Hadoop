@@ -67,7 +67,9 @@ public class ReadOutput {
      *
      * @param path
      */
-    public static void readAll(String path) { readAll(path, "part-r-", false); }
+    public static void readAll(String path) {
+        readAll(path, "part-r-", false);
+    }
 
     /**
      * 读取所有生成的 part-r-* 文件
@@ -90,17 +92,22 @@ public class ReadOutput {
         File[] files = file.listFiles();
 
 
-
         int count = 0;
         assert files != null;
+
         for (File value : files) {
             String fileName = value.getName();
 
             if (value.isFile() && fileName.startsWith(startName)) {
+                System.out.println("读取文件: " + fileName);
+                if (value.length() <= 0) {
+                    System.out.println("数据为空");
+                    continue;
+                }
                 try (InputStreamReader reader = new InputStreamReader(new FileInputStream(value));
                      BufferedReader br = new BufferedReader(reader);) {
                     String line = "";
-                    System.out.println("读取文件: " + fileName);
+
                     while ((line = br.readLine()) != null) {
                         System.out.println(line);
                         count++;
@@ -138,7 +145,7 @@ public class ReadOutput {
     public static void main(String[] args) {
         String readPath = "D:\\wordcount\\output\\D0701";
         Path outPath = new Path("D:\\wordcount\\output\\H");
-        ReadOutput.readAll(readPath,true);
+        ReadOutput.readAll(readPath, true);
 
     }
 }
