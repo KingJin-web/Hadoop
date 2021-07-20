@@ -35,7 +35,7 @@ public class Test1 {
     };
 
     public static void main(String[] args) throws IOException {
-        zkClient = new ZooKeeper(ZKHelper.connectString, ZKHelper.sessionTimeout, new Watcher() {
+        zkClient = new ZooKeeper("localhost:2181", ZKHelper.sessionTimeout, new Watcher() {
             @Override
             public void process(WatchedEvent event) {
                 System.out.println("事件信息" + event.getType() + "--" + event.getPath() + "--" + event.getState());

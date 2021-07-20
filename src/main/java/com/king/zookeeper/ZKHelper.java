@@ -22,6 +22,7 @@ import java.util.concurrent.CountDownLatch;
  */
 public class ZKHelper {
     public static String connectString = "node1:2181,node2:2181,node3:2181";
+
     public static int sessionTimeout = 2000;
     private static ZooKeeper zkClient = null;
 
